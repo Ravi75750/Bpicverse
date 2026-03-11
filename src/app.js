@@ -13,7 +13,7 @@ app.use((req, res, next) => {
     next();
 });
 
-const allowedOrigin = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigin = process.env.FRONTEND_URL || 'https://picvers.netlify.app';
 
 app.use(cors({
     origin: (origin, callback) => {
