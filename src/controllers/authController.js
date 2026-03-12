@@ -15,11 +15,13 @@ const generateToken = (id) => {
 // @access  Public
 export async function register(req, res) {
     try {
-        const { name, email, password } = req.body;
+        let { name, email, password } = req.body;
 
         if (!name || !email || !password) {
             return res.status(400).json({ message: 'Please provide all required fields' });
         }
+
+        email = email.toLowerCase().trim();
 
         const userExists = await User.findOne({ email });
 
@@ -60,7 +62,8 @@ export async function register(req, res) {
 // @access  Public
 export async function verifyOTP(req, res) {
     try {
-        const { email, otp } = req.body;
+        let { email, otp } = req.body;
+        email = email.toLowerCase().trim();
 
         const user = await User.findOne({ email }).select('+password');
 
@@ -107,11 +110,18 @@ export async function verifyOTP(req, res) {
 // @access  Public
 export async function login(req, res) {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+        email = email.toLowerCase().trim();
 
         const user = await User.findOne({ email }).select('+password');
 
-        if (!user || !(await user.matchPassword(password))) {
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+
+        const isMatch = await user.matchPassword(password);
+
+        if (!isMatch) {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
@@ -165,7 +175,8 @@ export async function login(req, res) {
 // @access  Public
 export async function verifyLogin(req, res) {
     try {
-        const { email, otp } = req.body;
+        let { email, otp } = req.body;
+        email = email.toLowerCase().trim();
 
         const user = await User.findOne({ email }).select('+password');
 
